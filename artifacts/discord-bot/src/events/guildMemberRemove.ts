@@ -1,9 +1,11 @@
 import { Client, GuildMember, PartialGuildMember } from "discord.js";
 import { embed, sendLog } from "../utils.js";
+import { GUILD_ID } from "../config.js";
 
 export default {
   name: "guildMemberRemove",
   async execute(member: GuildMember | PartialGuildMember, client: Client) {
+    if (member.guild.id !== GUILD_ID) return;
     const e = embed("📤 Member Left")
       .setThumbnail(member.user?.displayAvatarURL() ?? null)
       .addFields(

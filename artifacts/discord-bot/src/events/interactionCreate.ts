@@ -1,6 +1,7 @@
 import { Client, Interaction } from "discord.js";
 import { getDb } from "../db.js";
 import { handleModmailInteraction } from "../modmail.js";
+import { GUILD_ID } from "../config.js";
 
 export default {
   name: "interactionCreate",
@@ -9,6 +10,7 @@ export default {
 
     const guild = interaction.guild;
     if (!guild) return;
+    if (guild.id !== GUILD_ID) return;
 
     // Button roles
     const db = getDb();

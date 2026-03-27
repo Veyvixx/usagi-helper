@@ -1,5 +1,5 @@
 import { Client, Message } from "discord.js";
-import { PREFIX } from "../config.js";
+import { PREFIX, GUILD_ID } from "../config.js";
 import { getConfig, ensureConfig } from "../utils.js";
 import { handleModmail } from "../modmail.js";
 
@@ -13,6 +13,8 @@ export default {
       await handleModmail(message, client);
       return;
     }
+
+    if (message.guild.id !== GUILD_ID) return;
 
     ensureConfig(message.guild.id);
     const config = getConfig(message.guild.id);

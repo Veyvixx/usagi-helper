@@ -1,11 +1,13 @@
 import { Client, Message, PartialMessage } from "discord.js";
 import { embed, sendLog } from "../utils.js";
+import { GUILD_ID } from "../config.js";
 
 export default {
   name: "messageUpdate",
   async execute(oldMsg: Message | PartialMessage, newMsg: Message | PartialMessage, client: Client) {
     if (oldMsg.author?.bot) return;
     if (!oldMsg.guild) return;
+    if (oldMsg.guild.id !== GUILD_ID) return;
     if (oldMsg.content === newMsg.content) return;
 
     const e = embed("✏️ Message Edited")

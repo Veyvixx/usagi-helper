@@ -1,5 +1,6 @@
 import { Client, MessageReaction, User, PartialMessageReaction, PartialUser } from "discord.js";
 import { getDb } from "../db.js";
+import { GUILD_ID } from "../config.js";
 
 export default {
   name: "messageReactionAdd",
@@ -14,6 +15,7 @@ export default {
 
     const guild = reaction.message.guild;
     if (!guild) return;
+    if (guild.id !== GUILD_ID) return;
 
     const emojiKey = reaction.emoji.id ? `<:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name;
     const db = getDb();

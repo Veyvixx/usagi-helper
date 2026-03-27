@@ -1,9 +1,11 @@
 import { Client, GuildMember } from "discord.js";
 import { embed, sendLog } from "../utils.js";
+import { GUILD_ID } from "../config.js";
 
 export default {
   name: "guildMemberAdd",
   async execute(member: GuildMember, client: Client) {
+    if (member.guild.id !== GUILD_ID) return;
     const e = embed("📥 Member Joined")
       .setThumbnail(member.user.displayAvatarURL())
       .addFields(

@@ -1,11 +1,13 @@
 import { Client, Message, PartialMessage } from "discord.js";
 import { embed, sendLog } from "../utils.js";
+import { GUILD_ID } from "../config.js";
 
 export default {
   name: "messageDelete",
   async execute(msg: Message | PartialMessage, client: Client) {
     if (msg.author?.bot) return;
     if (!msg.guild) return;
+    if (msg.guild.id !== GUILD_ID) return;
 
     const e = embed("🗑️ Message Deleted")
       .addFields(
