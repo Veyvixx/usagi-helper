@@ -7,7 +7,7 @@ export default {
   async execute(client: Client) {
     console.log(`[Bot] Logged in as ${client.user?.tag}`);
     client.user?.setPresence({
-      activities: [{ name: "your server 👀", type: ActivityType.Watching }],
+      activities: [{ name: "your smile <3", type: ActivityType.Watching }],
       status: "online",
     });
   },
