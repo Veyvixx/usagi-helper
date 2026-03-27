@@ -11,7 +11,7 @@ import {
   PrivateThreadChannel,
 } from "discord.js";
 import { getDb } from "../db.js";
-import { GUILD_ID, PING_ROLE_ID, DEV_CHANNEL_ID, EMBED_COLOR } from "../config.js";
+import { GUILD_ID, PING_ROLE_ID, DEV_CHANNEL_ID, EMBED_COLOR, DEV_ROLE_ID } from "../config.js";
 import { isThreadChannel } from "../utils.js";
 
 export default {
@@ -78,7 +78,7 @@ async function handleDevChannel(message: Message) {
       .setTimestamp();
 
     await staffThread.send({
-      content: `📬 **New dev feedback from <@${message.author.id}>** — use \`/devreply\` to respond.`,
+      content: `<@&${DEV_ROLE_ID}> 📬 **New dev feedback from ${message.author.tag}** — use \`/devreply\` to respond.`,
       embeds: [msgEmbed],
     });
   } catch (err) {
