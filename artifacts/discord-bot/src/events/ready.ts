@@ -19,7 +19,7 @@ export default {
     }
 
     client.user?.setPresence({
-      activities: [{ name: "your smile <3", type: ActivityType.Watching }],
+      activities: [{ name: "chiikawas pancakes", type: ActivityType.Watching }],
       status: "online",
     });
 

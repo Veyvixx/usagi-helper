@@ -28,8 +28,12 @@ export default {
 
     const target = interaction.options.getUser("user", true);
     const replyText = interaction.options.getString("message", true);
-    const staffMember = await interaction.guild!.members.fetch(interaction.user.id);
-    const staffName = staffMember.displayName;
+    const staffName = member.displayName;
+
+    const db = getDb();
+    const lastMsg = db.prepare(
+      "SELECT message_content FROM dev_channel_messages WHERE guild_id = ? AND user_id = ? ORDER BY created_at DESC LIMIT 1"
+    ).get(interaction.guild!.id, target.id) as any;
 
     const replyEmbed = new EmbedBuilder()
       .setColor(EMBED_COLOR)
@@ -42,10 +46,14 @@ export default {
         return;
       }
       await ch.send({
-        content: `<@${target.id}> · @reply >< · **you have received a response from** \`${staffName}\``,
+        content: `<@${target.id}> · **you have received a response from** \`${staffName}\``,
         embeds: [replyEmbed],
       });
-      await interaction.reply({ content: `✅ Reply sent to <@${target.id}>.`, ephemeral: true });
+
+      const preview = lastMsg?.message_content
+        ? `\n\n**Their last message:** ${lastMsg.message_content.slice(0, 300)}`
+        : "";
+      await interaction.reply({ content: `✅ Reply sent to <@${target.id}>.${preview}`, ephemeral: true });
     } catch {
       await interaction.reply({ content: "❌ Failed to send reply.", ephemeral: true });
     }

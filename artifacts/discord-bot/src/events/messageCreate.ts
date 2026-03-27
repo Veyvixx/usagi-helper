@@ -48,10 +48,11 @@ async function handleDevChannel(message: Message) {
     .setColor(EMBED_COLOR)
     .setDescription(
       `your message has been **sent** to our developers ! we appreciate your patience and support as a donator !\nthe **current** eta for a response is :\n**5 business days**`
-    );
+    )
+    .addFields({ name: "your message", value: content.slice(0, 1024) || "\u200b" });
 
   const sent = await (message.channel as TextChannel).send({
-    content: `<@${message.author.id}> • @reply ><`,
+    content: `<@${message.author.id}>`,
     embeds: [sentEmbed],
   }).catch(() => null);
 
