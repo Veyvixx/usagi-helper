@@ -25,7 +25,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const member = await interaction.guild!.members.fetch(interaction.user.id);
     if (!member.roles.cache.has(STAFF_ROLE_ID) && !member.permissions.has(PermissionFlagsBits.Administrator)) {
-      await interaction.reply({ content: "❌ You need the staff role to use this command.", ephemeral: true });
+      await interaction.reply({ content: "❌ You need the staff role to use this command.", flags: 64 });
       return;
     }
 

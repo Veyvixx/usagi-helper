@@ -22,7 +22,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const member = await interaction.guild!.members.fetch(interaction.user.id);
     if (!member.roles.cache.has(STAFF_ROLE_ID) && !member.permissions.has(PermissionFlagsBits.Administrator)) {
-      await interaction.reply({ content: "❌ You need the staff role to use this command.", ephemeral: true });
+      await interaction.reply({ content: "❌ You need the staff role to use this command.", flags: 64 });
       return;
     }
 
@@ -42,7 +42,7 @@ export default {
     try {
       const ch = await interaction.guild!.channels.fetch(DEV_CHANNEL_ID) as TextChannel;
       if (!ch?.isTextBased()) {
-        await interaction.reply({ content: "❌ Dev channel not found.", ephemeral: true });
+        await interaction.reply({ content: "❌ Dev channel not found.", flags: 64 });
         return;
       }
       await ch.send({
@@ -53,9 +53,9 @@ export default {
       const preview = lastMsg?.message_content
         ? `\n\n**Their last message:** ${lastMsg.message_content.slice(0, 300)}`
         : "";
-      await interaction.reply({ content: `✅ Reply sent to <@${target.id}>.${preview}`, ephemeral: true });
+      await interaction.reply({ content: `✅ Reply sent to <@${target.id}>.${preview}`, flags: 64 });
     } catch {
-      await interaction.reply({ content: "❌ Failed to send reply.", ephemeral: true });
+      await interaction.reply({ content: "❌ Failed to send reply.", flags: 64 });
     }
   },
 };

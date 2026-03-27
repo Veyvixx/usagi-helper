@@ -28,9 +28,9 @@ export default {
       } catch (err) {
         console.error(err);
         if (interaction.replied || interaction.deferred) {
-          await interaction.followUp({ content: "An error occurred.", ephemeral: true }).catch(() => {});
+          await interaction.followUp({ content: "An error occurred.", flags: 64 }).catch(() => {});
         } else {
-          await interaction.reply({ content: "An error occurred.", ephemeral: true }).catch(() => {});
+          await interaction.reply({ content: "An error occurred.", flags: 64 }).catch(() => {});
         }
       }
       return;
@@ -57,13 +57,13 @@ export default {
         try {
           const ch = await interaction.guild.channels.fetch(channelId) as TextChannel;
           if (!ch?.isTextBased()) {
-            await interaction.reply({ content: "❌ Invalid channel.", ephemeral: true });
+            await interaction.reply({ content: "❌ Invalid channel.", flags: 64 });
             return;
           }
           await ch.send({ embeds: [e] });
-          await interaction.reply({ content: `✅ Embed sent to <#${channelId}>!`, ephemeral: true });
+          await interaction.reply({ content: `✅ Embed sent to <#${channelId}>!`, flags: 64 });
         } catch {
-          await interaction.reply({ content: "❌ Failed to send embed.", ephemeral: true });
+          await interaction.reply({ content: "❌ Failed to send embed.", flags: 64 });
         }
         return;
       }
@@ -96,7 +96,7 @@ export default {
           }
         } catch {}
 
-        await interaction.reply({ content: `✅ Sticky embed set for <#${channelId}>!`, ephemeral: true });
+        await interaction.reply({ content: `✅ Sticky embed set for <#${channelId}>!`, flags: 64 });
         return;
       }
     }
@@ -113,13 +113,13 @@ export default {
       ).get(threadId) as any;
 
       if (!threadData) {
-        await interaction.reply({ content: "This thread is already closed or not found.", ephemeral: true });
+        await interaction.reply({ content: "This thread is already closed or not found.", flags: 64 });
         return;
       }
 
       const member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
       if (!member) {
-        await interaction.reply({ content: "❌ Could not verify your permissions.", ephemeral: true });
+        await interaction.reply({ content: "❌ Could not verify your permissions.", flags: 64 });
         return;
       }
 
@@ -127,7 +127,7 @@ export default {
       const isStaff = member.roles.cache.has(STAFF_ROLE_ID);
 
       if (!isOpener && !isStaff) {
-        await interaction.reply({ content: "❌ Only the thread opener or staff can close this thread.", ephemeral: true });
+        await interaction.reply({ content: "❌ Only the thread opener or staff can close this thread.", flags: 64 });
         return;
       }
 

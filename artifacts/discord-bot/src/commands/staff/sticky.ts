@@ -63,7 +63,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const member = await interaction.guild!.members.fetch(interaction.user.id);
     if (!member.roles.cache.has(STAFF_ROLE_ID) && !member.permissions.has(PermissionFlagsBits.Administrator)) {
-      await interaction.reply({ content: "❌ You need the staff role to use this command.", ephemeral: true });
+      await interaction.reply({ content: "❌ You need the staff role to use this command.", flags: 64 });
       return;
     }
 
@@ -99,7 +99,7 @@ export default {
         }
       } catch {}
 
-      await interaction.reply({ content: `✅ Sticky text message set for <#${channel.id}>.`, ephemeral: true });
+      await interaction.reply({ content: `✅ Sticky text message set for <#${channel.id}>.`, flags: 64 });
     } else if (sub === "setembed") {
       const modal = new ModalBuilder()
         .setCustomId(`sticky_embed:${channel.id}`)
@@ -150,7 +150,7 @@ export default {
         "DELETE FROM sticky_messages WHERE guild_id = ? AND channel_id = ?"
       ).run(interaction.guild!.id, channel.id);
 
-      await interaction.reply({ content: `✅ Sticky message removed from <#${channel.id}>.`, ephemeral: true });
+      await interaction.reply({ content: `✅ Sticky message removed from <#${channel.id}>.`, flags: 64 });
     }
   },
 };

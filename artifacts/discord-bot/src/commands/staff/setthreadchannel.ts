@@ -42,7 +42,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const member = await interaction.guild!.members.fetch(interaction.user.id);
     if (!member.roles.cache.has(STAFF_ROLE_ID) && !member.permissions.has(PermissionFlagsBits.Administrator)) {
-      await interaction.reply({ content: "❌ You need the staff role to use this command.", ephemeral: true });
+      await interaction.reply({ content: "❌ You need the staff role to use this command.", flags: 64 });
       return;
     }
 
@@ -54,22 +54,22 @@ export default {
       db.prepare(
         "INSERT OR IGNORE INTO thread_channels (guild_id, channel_id) VALUES (?, ?)"
       ).run(interaction.guild!.id, channel.id);
-      await interaction.reply({ content: `✅ Thread support enabled for <#${channel.id}>.`, ephemeral: true });
+      await interaction.reply({ content: `✅ Thread support enabled for <#${channel.id}>.`, flags: 64 });
     } else if (sub === "remove") {
       const channel = interaction.options.getChannel("channel", true);
       db.prepare(
         "DELETE FROM thread_channels WHERE guild_id = ? AND channel_id = ?"
       ).run(interaction.guild!.id, channel.id);
-      await interaction.reply({ content: `✅ Thread support disabled for <#${channel.id}>.`, ephemeral: true });
+      await interaction.reply({ content: `✅ Thread support disabled for <#${channel.id}>.`, flags: 64 });
     } else if (sub === "list") {
       const rows = db.prepare(
         "SELECT channel_id FROM thread_channels WHERE guild_id = ?"
       ).all(interaction.guild!.id) as any[];
       if (!rows.length) {
-        await interaction.reply({ content: "No thread-enabled channels set.", ephemeral: true });
+        await interaction.reply({ content: "No thread-enabled channels set.", flags: 64 });
       } else {
         const list = rows.map((r) => `<#${r.channel_id}>`).join("\n");
-        await interaction.reply({ content: `**Thread-enabled channels:**\n${list}`, ephemeral: true });
+        await interaction.reply({ content: `**Thread-enabled channels:**\n${list}`, flags: 64 });
       }
     }
   },
