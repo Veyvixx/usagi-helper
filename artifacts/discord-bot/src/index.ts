@@ -1,5 +1,4 @@
 import { Client, GatewayIntentBits, Partials, Collection } from "discord.js";
-import { loadCommands } from "./handlers/commandHandler.js";
 import { loadEvents } from "./handlers/eventHandler.js";
 import { initDb } from "./db.js";
 
@@ -24,9 +23,9 @@ const client = new Client({
 });
 
 (client as any).commands = new Collection();
+(client as any).slashCommands = new Collection();
 
 initDb();
-loadCommands(client);
 loadEvents(client);
 
 const token = process.env.DISCORD_TOKEN;

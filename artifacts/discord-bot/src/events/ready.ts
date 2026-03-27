@@ -1,5 +1,10 @@
-import { Client, ActivityType } from "discord.js";
+import { Client, ActivityType, REST, Routes } from "discord.js";
 import { GUILD_ID } from "../config.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
   name: "clientReady",
@@ -7,10 +12,8 @@ export default {
   async execute(client: Client) {
     console.log(`[Bot] Logged in as ${client.user?.tag}`);
 
-    // Leave any guild that isn't the configured one
     for (const [id, guild] of client.guilds.cache) {
       if (id !== GUILD_ID) {
-        console.log(`[Bot] Leaving unauthorized guild: ${guild.name} (${id})`);
         await guild.leave().catch(() => {});
       }
     }
@@ -20,6 +23,36 @@ export default {
       status: "online",
     });
 
-    console.log(`[Bot] Locked to guild ${GUILD_ID}`);
+    const commands: any[] = [];
+    const commandsPath = path.join(__dirname, "../commands");
+    const folders = fs.readdirSync(commandsPath);
+
+    for (const folder of folders) {
+      const folderPath = path.join(commandsPath, folder);
+      if (!fs.statSync(folderPath).isDirectory()) continue;
+      const files = fs
+        .readdirSync(folderPath)
+        .filter((f) => f.endsWith(".ts") || f.endsWith(".js"));
+      for (const file of files) {
+        const mod = await import(path.join(folderPath, file));
+        const command = mod.default;
+        if (command?.data) {
+          commands.push(command.data.toJSON());
+          (client as any).slashCommands.set(command.data.name, command);
+        }
+      }
+    }
+
+    const token = process.env.DISCORD_TOKEN!;
+    const rest = new REST({ version: "10" }).setToken(token);
+    try {
+      await rest.put(
+        Routes.applicationGuildCommands(client.user!.id, GUILD_ID),
+        { body: commands }
+      );
+      console.log(`[Bot] Registered ${commands.length} slash commands.`);
+    } catch (err) {
+      console.error("[Bot] Failed to register slash commands:", err);
+    }
   },
 };

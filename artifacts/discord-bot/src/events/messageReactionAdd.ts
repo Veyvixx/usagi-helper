@@ -1,6 +1,6 @@
-import { Client, MessageReaction, User, PartialMessageReaction, PartialUser } from "discord.js";
+import { Client, MessageReaction, User, PartialMessageReaction, PartialUser, EmbedBuilder, TextChannel } from "discord.js";
 import { getDb } from "../db.js";
-import { GUILD_ID } from "../config.js";
+import { GUILD_ID, STAFF_ROLE_ID, CHIEAT_EMOJI_ID, CHIEAT_EMOJI_NAME, EMBED_COLOR } from "../config.js";
 
 export default {
   name: "messageReactionAdd",
@@ -17,17 +17,40 @@ export default {
     if (!guild) return;
     if (guild.id !== GUILD_ID) return;
 
-    const emojiKey = reaction.emoji.id ? `<:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name;
-    const db = getDb();
-    const row = db.prepare(
-      "SELECT role_id FROM reaction_roles WHERE guild_id = ? AND message_id = ? AND emoji = ?"
-    ).get(guild.id, reaction.message.id, emojiKey) as any;
+    const emoji = reaction.emoji;
+    const isChiiEat = emoji.id === CHIEAT_EMOJI_ID && emoji.name === CHIEAT_EMOJI_NAME;
+    if (!isChiiEat) return;
 
-    if (!row) return;
+    const member = await guild.members.fetch(user.id).catch(() => null);
+    if (!member) return;
+
+    if (!member.roles.cache.has(STAFF_ROLE_ID)) return;
+
+    const db = getDb();
+    const thread = db.prepare(
+      "SELECT * FROM support_threads WHERE bot_message_id = ? AND closed = 0"
+    ).get(reaction.message.id) as any;
+
+    if (!thread) return;
+    if (thread.picked_by_id) return;
+
+    db.prepare(
+      "UPDATE support_threads SET picked_by_id = ? WHERE id = ?"
+    ).run(user.id, thread.id);
 
     try {
-      const member = await guild.members.fetch(user.id);
-      await member.roles.add(row.role_id);
-    } catch {}
+      const threadChannel = await guild.channels.fetch(thread.thread_id) as TextChannel;
+      if (!threadChannel?.isTextBased()) return;
+
+      const pickEmbed = new EmbedBuilder()
+        .setColor(EMBED_COLOR)
+        .setDescription(
+          `• <@${user.id}> has picked up this case !\n• please be patient as they respond ~`
+        );
+
+      await threadChannel.send({ embeds: [pickEmbed] });
+    } catch (err) {
+      console.error("[ReactionAdd] Failed to send pick-up embed:", err);
+    }
   },
 };
