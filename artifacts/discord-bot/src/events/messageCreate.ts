@@ -8,6 +8,7 @@ import {
   ThreadChannel,
   TextChannel,
   ChannelType,
+  PrivateThreadChannel,
 } from "discord.js";
 import { getDb } from "../db.js";
 import { GUILD_ID, PING_ROLE_ID, DEV_CHANNEL_ID, EMBED_COLOR } from "../config.js";
@@ -48,8 +49,7 @@ async function handleDevChannel(message: Message) {
     .setColor(EMBED_COLOR)
     .setDescription(
       `your message has been **sent** to our developers ! we appreciate your patience and support as a donator !\nthe **current** eta for a response is :\n**5 business days**`
-    )
-    .addFields({ name: "your message", value: content.slice(0, 1024) || "\u200b" });
+    );
 
   const sent = await (message.channel as TextChannel).send({
     content: `<@${message.author.id}>`,
@@ -61,6 +61,29 @@ async function handleDevChannel(message: Message) {
   db.prepare(
     "INSERT INTO dev_channel_messages (guild_id, channel_id, user_id, message_content, bot_message_id) VALUES (?, ?, ?, ?, ?)"
   ).run(message.guild!.id, message.channelId, message.author.id, content, sent.id);
+
+  // Create a private thread visible only to staff (MANAGE_THREADS permission)
+  try {
+    const staffThread = await (message.channel as TextChannel).threads.create({
+      name: `📩 ${message.author.username}`,
+      type: ChannelType.PrivateThread,
+      invitable: false,
+      autoArchiveDuration: 10080,
+    }) as PrivateThreadChannel;
+
+    const msgEmbed = new EmbedBuilder()
+      .setColor(EMBED_COLOR)
+      .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
+      .setDescription(content)
+      .setTimestamp();
+
+    await staffThread.send({
+      content: `📬 **New dev feedback from <@${message.author.id}>** — use \`/devreply\` to respond.`,
+      embeds: [msgEmbed],
+    });
+  } catch (err) {
+    console.error("[DevChannel] Failed to create staff thread:", err);
+  }
 }
 
 async function handleThreadSupport(message: Message) {
