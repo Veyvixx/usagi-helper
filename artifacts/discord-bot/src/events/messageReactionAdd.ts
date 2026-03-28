@@ -44,12 +44,12 @@ export default {
 
     const db = getDb();
 
-    // Match by the thread channel the reaction happened in
+    // Match by the original message the thread was created from
     const threadData = db
       .prepare(
-        "SELECT * FROM support_threads WHERE thread_id = ? AND closed = 0"
+        "SELECT * FROM support_threads WHERE starter_message_id = ? AND closed = 0"
       )
-      .get(reaction.message.channelId) as any;
+      .get(reaction.message.id) as any;
 
     if (!threadData) return;
     if (threadData.picked_by_id) return;

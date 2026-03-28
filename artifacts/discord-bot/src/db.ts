@@ -27,6 +27,7 @@ export function initDb() {
       guild_id TEXT NOT NULL,
       channel_id TEXT NOT NULL,
       thread_id TEXT NOT NULL UNIQUE,
+      starter_message_id TEXT,
       opener_id TEXT NOT NULL,
       bot_message_id TEXT,
       picked_by_id TEXT,
@@ -54,6 +55,11 @@ export function initDb() {
       created_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
   `);
+
+  // Migrate: add starter_message_id if missing
+  try {
+    db.exec("ALTER TABLE support_threads ADD COLUMN starter_message_id TEXT");
+  } catch {}
 
   return db;
 }

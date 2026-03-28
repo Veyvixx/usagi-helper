@@ -131,8 +131,8 @@ async function handleThreadSupport(message: Message) {
   }).catch(() => null);
 
   db.prepare(
-    "INSERT INTO support_threads (guild_id, channel_id, thread_id, opener_id, bot_message_id) VALUES (?, ?, ?, ?, ?)"
-  ).run(message.guild.id, message.channelId, thread.id, message.author.id, botMsg?.id ?? null);
+    "INSERT INTO support_threads (guild_id, channel_id, thread_id, starter_message_id, opener_id, bot_message_id) VALUES (?, ?, ?, ?, ?, ?)"
+  ).run(message.guild.id, message.channelId, thread.id, message.id, message.author.id, botMsg?.id ?? null);
 }
 
 async function handleSticky(message: Message) {
