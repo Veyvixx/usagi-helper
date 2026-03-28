@@ -148,12 +148,13 @@ export default {
       await interaction.update({ components: [disabledRow] });
 
       try {
-        const thread = await interaction.guild.channels.fetch(threadId) as TextChannel;
+        const thread = await interaction.guild.channels.fetch(threadId) as any;
         if (thread?.isTextBased()) {
           await thread.send({ embeds: [closedEmbed] });
-          if ("setArchived" in thread) {
-            await (thread as any).setArchived(true).catch(() => {});
-          }
+          const newName = `closed | ${thread.name}`.slice(0, 100);
+          await thread.setName(newName).catch(() => {});
+          await thread.setLocked(true).catch(() => {});
+          await thread.setArchived(true).catch(() => {});
         }
       } catch {}
 

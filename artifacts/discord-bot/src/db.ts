@@ -1,4 +1,4 @@
-import { DatabaseSync } from "node:sqlite";
+import Database from "better-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -7,13 +7,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, "../data");
 const dbPath = path.join(dataDir, "bot.db");
 
-let db: DatabaseSync;
+let db: Database.Database;
 
 export function initDb() {
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-  db = new DatabaseSync(dbPath);
-  db.exec("PRAGMA journal_mode = WAL");
+  db = new Database(dbPath);
+  db.pragma("journal_mode = WAL");
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS thread_channels (
@@ -64,6 +64,6 @@ export function initDb() {
   return db;
 }
 
-export function getDb(): DatabaseSync {
+export function getDb(): Database.Database {
   return db;
 }
